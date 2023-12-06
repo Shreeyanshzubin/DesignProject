@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "678687310675",
+    "project_id": "photo-share-clone",
+    "storage_bucket": "photo-share-clone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678687310675:android:eb1a68267eef81ed5e57a6",
+        "android_client_info": {
+          "package_name": "com.example.photo_share_clone_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsuqDFNGNjnOniDlxJ30YS7kgAj0dizfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
