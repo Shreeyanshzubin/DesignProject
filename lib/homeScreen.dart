@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:photo_share_clone_app/settings.dart';
 import 'package:photo_share_clone_app/storage.dart';
 
+import 'imagesPage.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -39,6 +41,35 @@ class _SearchAppState extends State<SearchApp> {
   TextEditingController searchController = TextEditingController();
   List<SearchResult> searchResults = [];
   bool isGridView = false;
+
+  List<String> folderNames = []; // Declare this list in your _ImageSearchScreenState class
+
+  Storage_firebase fss=Storage_firebase();
+
+  Future<void> fetchFolderNames() async {
+
+    List<String> folders = await fss.listFiles(); // Call your listFolders function here
+    setState(() {
+      folderNames = folders;
+    });
+  }
+
+  String searchQuery = ''; // State variable to hold the search query
+  List<String> filteredFolders = [];
+
+  void updateSearch(String query) {
+    setState(() {
+      searchQuery = query;
+      filteredFolders = fss.searchFolders(query); // Call searchFolders method to get filtered results
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    fetchFolderNames();
+    super.initState();
+  }
 
   void search(String query) {
     setState(() {
@@ -147,6 +178,7 @@ class _SearchAppState extends State<SearchApp> {
   @override
   Widget build(BuildContext context) {
     final Storage_firebase storage = Storage_firebase();
+    // print(folderNames[0]);
     return Scaffold(
       floatingActionButton: Wrap(
         direction: Axis.horizontal,
@@ -191,13 +223,13 @@ class _SearchAppState extends State<SearchApp> {
                   child: TextField(
                     controller: searchController,
                     onChanged: (query) {
-                      search(query);
+                      updateSearch(query);
                     },
-                    onSubmitted: (query) {
-                      if (query.isNotEmpty) {
-                        performSearch();
-                      }
-                    },
+                    // onSubmitted: (query) {
+                    //   if (query.isNotEmpty) {
+                    //     performSearch();
+                    //   }
+                    // },
                     decoration: InputDecoration(
                       hintText: 'Enter Code',
                     ),
@@ -221,19 +253,40 @@ class _SearchAppState extends State<SearchApp> {
             ),
           ),
           SizedBox(height: 20,),
-          FutureBuilder(future: storage.listFiles(), builder: (context,AsyncSnapshot<ListResult> snapshot){
-            if(snapshot.connectionState==ConnectionState.done &&  snapshot.hasData){
-              return Container(
-                height: 100,
-                child: ListView.builder(
-
-                  shrinkWrap: true,
-                  itemCount:snapshot.data!.items.length,itemBuilder: (context,i){
-                return Text(snapshot.data!.items[i].name);
-              }),);
-            }
-            return Text('No data found');
-          })
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredFolders.length,
+              itemBuilder: (context, index) {
+                // Extracting the folder name from the path
+                String folderName = filteredFolders[index].split('/').last;
+                return ListTile(
+                  title: Text(folderName), // Display only the folder name
+                  onTap: () {
+                    String selectedFolder = filteredFolders[index]; // Get the selected folder path
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImageListScreen(folderPath: selectedFolder),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          // FutureBuilder(future: storage.listFiles(), builder: (context,AsyncSnapshot<ListResult> snapshot){
+          //   if(snapshot.connectionState==ConnectionState.done &&  snapshot.hasData){
+          //     return Container(
+          //       height: 100,
+          //       child: ListView.builder(
+          //
+          //         shrinkWrap: true,
+          //         itemCount:snapshot.data!.items.length,itemBuilder: (context,i){
+          //       return Text(snapshot.data!.items[i].name);
+          //     }),);
+          //   }
+          //   return Text('No data found');
+          // })
 
           // Expanded(
           //   child: isGridView
@@ -353,3 +406,12 @@ class DetailPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
