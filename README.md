@@ -1,4 +1,4 @@
-# photo_share_clone_app
+# photo_share_clone_app Snapseeker
 
 A new Flutter project.
 
